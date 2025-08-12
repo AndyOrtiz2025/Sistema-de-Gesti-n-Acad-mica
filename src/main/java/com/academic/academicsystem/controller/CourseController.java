@@ -1,5 +1,6 @@
 package com.academic.academicsystem.controller;
 
+import com.academic.academicsystem.dto.CourseDTO;
 import com.academic.academicsystem.model.Course;
 import com.academic.academicsystem.service.CourseService;
 import org.springframework.http.ResponseEntity;
@@ -17,27 +18,34 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    // POST - Crear
+    // POST - Crear (igual)
     @PostMapping
     public ResponseEntity<Course> createCourse(@RequestBody Course course) {
         return ResponseEntity.ok(courseService.createCourse(course));
     }
 
-    // GET - Obtener todos
+    // GET - Obtener todos → ahora DTO + filtros
+    // Ejemplos:
+    //  - /api/courses
+    //  - /api/courses?semester=4
+    //  - /api/courses?professorId=1
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
-        return ResponseEntity.ok(courseService.getAllCourses());
+    public ResponseEntity<List<CourseDTO>> getAllCourses(
+            @RequestParam(required = false) String semester,
+            @RequestParam(required = false) Integer professorId
+    ) {
+        return ResponseEntity.ok(courseService.getAllCoursesDTO(semester, professorId));
     }
 
-    // GET - Obtener por ID
+    // GET - Obtener por ID → ahora DTO
     @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourseById(@PathVariable Integer id) {
-        return courseService.getCourseById(id)
+    public ResponseEntity<CourseDTO> getCourseById(@PathVariable Integer id) {
+        return courseService.getCourseDTOById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // PUT - Actualizar
+    // PUT - Actualizar (igual)
     @PutMapping("/{id}")
     public ResponseEntity<Course> updateCourse(@PathVariable Integer id, @RequestBody Course course) {
         return courseService.updateCourse(id, course)
@@ -45,11 +53,12 @@ public class CourseController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // DELETE - Eliminar
+    // DELETE - Eliminar (igual)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Integer id) {
         courseService.deleteCourse(id);
         return ResponseEntity.noContent().build();
     }
 }
+
 
